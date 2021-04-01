@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+             
+<mapper namespace="CommentMapper">
+	<select id="selectListComments" resultType="com.spring5.drama07.board.vo.CommentVO" parameterType="Integer">
+		select commentArticleNO, commentContent, commentWriteDate, commentModDate, id, guestId
+		from hr.boardComment07
+		where commentFlag = 'no' and articleNO=#{articleNO}
+		order by commentArticleNO ASC
+	</select>
+	
+	<select id="selectListAdminComments" resultType="com.spring5.drama07.board.vo.CommentVO" parameterType="com.spring5.drama07.board.vo.CommentVO">
+		select commentArticleNO, commentContent, commentWriteDate, commentModDate, id, guestId, articleNO
+		from hr.boardComment07
+		<where>
+			commentFlag = 'no'
+			<if test="guestId!='' and guestId!=null">
+				and guestId LiKE '%' || #{guestId} || '%'
+			</if>
+		</where>
+		order by commentArticleNO DESC
+	</select>	
+
+	<select id="selectListFlagComments" resultType="com.spring5.drama07.board.vo.CommentVO" parameterType="com.spring5.drama07.board.vo.CommentVO">
+		select commentArticleNO, commentContent, commentWriteDate, commentModDate, id, guestId, articleNO
+		from hr.boardComment07
+		<where>
+			commentFlag = 'yes'
+			<if test="guestId!='' and guestId!=null">
+				and guestId LiKE '%' || #{guestId} || '%'
+			</if>
+		</where>
+		order by commentArticleNO DESC
+	</select>
+	
+	
+	
+	<insert id="insertAddComment" parameterType="com.spring5.drama07.board.vo.CommentVO">
+		insert into hr.boardComment07
+		values(hr.comment07seq.nextval,#{commentContent},default,default,#{id},#{guestId},#{articleNO},default)	
+	</insert>
+	
+	<update id="updateModComment" parameterType="com.spring5.drama07.board.vo.CommentVO">
+		update hr.boardComment07
+		set commentContent=#{commentContent}, commentModDate=sysTimestamp(0)
+		where commentArticleNO = #{commentArticleNO}	
+	</update>
+
+	<update id="updateRemoveComment" parameterType="Integer">
+		update hr.boardComment07
+		set commentFlag='yes'
+		where commentArticleNO=#{commentArticleNO}
+	</update>
+
+	<update id="updateRestoreComment" parameterType="Integer">
+		update hr.boardComment07
+		set commentFlag='no'
+		where commentArticleNO=#{commentArticleNO}
+	</update>
+
+	<delete id="deleteComment" parameterType="Integer">
+		delete hr.boardComment07
+		where commentArticleNO=#{commentArticleNO}
+	</delete>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

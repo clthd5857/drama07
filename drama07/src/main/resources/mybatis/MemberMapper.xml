@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+             
+<mapper namespace="MemberMapper">
+	<resultMap id="memberResult" type="com.spring5.drama07.member.vo.MemberVO">
+		<result property="id" column="id" />
+		<result property="password" column="password" />
+		<result property="name" column="name" />
+		<result property="email" column="email" />
+		<result property="joinDate" column="joinDate" />
+	</resultMap>
+	
+	
+	<!-- 회원 목록 보기/검색 -->
+	<select id="selectMemberFlag" resultMap="memberResult" parameterType="com.spring5.drama07.member.vo.MemberVO">
+		select * from hr.member07
+		<where>
+			memberFlag='yes'
+			<if test="id!='' and id!=null">
+				and id LIKE '%'  || #{id} || '%'
+			</if>
+			<if test="name!='' and name!=null">
+				and name LIKE '%'  || #{name} || '%'
+			</if>
+			<if test="email!='' and email!=null">
+				and email LIKE '%' || #{email} || '%'
+			</if>
+		</where>
+		ORDER BY joinDate DESC
+	</select>
+
+	<select id="selectMemberList" resultMap="memberResult" parameterType="com.spring5.drama07.member.vo.MemberVO">
+		select * from hr.member07
+		<where>
+			memberFlag='no'
+			<if test="id!='' and id!=null">
+				and id LIKE '%'  || #{id} || '%'
+			</if>			
+			<if test="name!='' and name!=null">
+				and name LIKE '%'  || #{name} || '%'
+			</if>
+			<if test="email!='' and email!=null">
+				and email LIKE '%' || #{email} || '%'
+			</if>
+		</where>
+		ORDER BY joinDate DESC
+	</select>
+
+	
+	
+	<!-- 회원 추가 -->
+	<insert id="insertAddMember" parameterType="com.spring5.drama07.member.vo.MemberVO">
+		insert into hr.member07
+		values(lower(#{id}) ,#{password}, lower(#{name}),lower(#{email}),default,default)	
+	</insert>
+	
+	
+	<!-- 회원 지우기/삭제하기 -->
+	<update id="updateRemoveMember" parameterType="String">
+		update hr.member07
+		set memberFlag='yes'
+		where id = #{id} 
+	</update>
+	
+	<update id="updateRestoreMember" parameterType="String">
+		update hr.member07
+		set memberFlag='no'
+		where id = #{id} 
+	</update>
+	
+	
+	<delete id="deleteMember" parameterType="String">
+		delete from hr.member07 where id=#{id}
+	</delete>
+	
+	<!-- 회원 정보 수정(password, email만) -->
+	<update id="updateModMember" parameterType="com.spring5.drama07.member.vo.MemberVO">
+		update hr.member07
+		set password=#{password}, email=#{email}
+		where id=#{id}
+	</update>
+	
+	<select id="selectModMember" resultType="com.spring5.drama07.member.vo.MemberVO" parameterType="String">
+		select *
+		from hr.member07
+		where id=#{id}
+	</select>
+	
+	<!-- 회원 중복 검사 -->
+	<select id="selectDuplicateId" parameterType="String" resultType="String">
+		select (case when count(*)=1 then 'not_usable'
+									 else 'usable' end) as result
+		from hr.member07
+		where id=#{id}
+	
+	</select>
+	
+	<select id="selectDuplicateEmail" parameterType="String" resultType="String">
+		select (case when count(*)=1 then 'not_usable'
+									 else 'usable' end) as result
+		from hr.member07
+		where email=#{email}
+	</select>	
+	
+	<!-- 로그인 -->
+	<select id="selectLoginMember" parameterType="com.spring5.drama07.member.vo.MemberVO" resultType="String">
+		select (case when count(*)=1 then 'true'
+									 else 'false' end) as "result"
+		from hr.member07
+		where id=#{id} and password=#{password} and memberFlag='no'
+	</select>
+	
+</mapper>

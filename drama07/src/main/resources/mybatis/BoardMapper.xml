@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+             
+<mapper namespace="BoardMapper">
+	<select id="selectListArticles" resultType="com.spring5.drama07.board.vo.BoardVO" parameterType="com.spring5.drama07.board.vo.BoardVO">
+		select articleNO, headName, title, writeDate, modDate, id
+		from hr.board07
+		<where>
+			boardFlag = 'no'
+			<if test="articleNO!='' and articleNO!=null">
+				and articleNO LIKE '%' || #{articleNO} || '%'
+			</if>
+			<if test="id!='' and id!=null">
+				and id LIKE '%' ||#{id} || '%'
+			</if>
+			<if test="title!='' and title!=null">
+				and title LIKE '%' ||#{title} || '%'
+			</if>
+			<if test="headName!='' and headName!=null">
+				and headName LIKE '%' ||#{headName} || '%'
+			</if>			
+		</where>
+		order by articleNO desc
+	</select>
+
+	<select id="selectListFlagArticles" resultType="com.spring5.drama07.board.vo.BoardVO" parameterType="com.spring5.drama07.board.vo.BoardVO">
+		select articleNO, headName, title, writeDate, modDate, id
+		from hr.board07
+		<where>
+			boardFlag = 'yes'
+			<if test="articleNO!='' and articleNO!=null">
+				and articleNO LIKE '%' || #{articleNO} || '%'
+			</if>
+			<if test="id!='' and id!=null">
+				and id LIKE '%' ||#{id} || '%'
+			</if>
+			<if test="title!='' and title!=null">
+				and title LIKE '%' ||#{title} || '%'
+			</if>
+			<if test="headName!='' and headName!=null">
+				and headName LIKE '%' ||#{headName} || '%'
+			</if>			
+		</where>
+		order by articleNO desc
+	</select>	
+	
+	<select id="selectViewArticle" resultType="com.spring5.drama07.board.vo.BoardVO" parameterType="Integer">
+		select articleNO, headName, title, content, fileName, writeDate, modDate, id
+		from hr.board07
+		where articleNO=#{articleNO}
+	</select>
+	
+	<insert id="insertAddArticle" parameterType="com.spring5.drama07.board.vo.BoardVO">
+		insert into hr.board07
+		<choose>
+			<when test="fileName!='' and fileName!=null">
+				values(hr.board07seq.nextval, #{headName}, #{title}, #{content}, #{fileName}, default,default,#{id},default)
+			</when>
+			<otherwise>
+				values(hr.board07seq.nextval, #{headName}, #{title}, #{content}, null, default,default,#{id},default)
+			</otherwise>
+		</choose>
+	</insert>
+	
+	<select id="selectArticleNO" resultType="Integer">
+		select hr.board07seq.currval from dual
+	</select>
+	
+	<update id="updateModArticle" parameterType="com.spring5.drama07.board.vo.BoardVO">
+		update hr.board07
+		<choose>
+			<when test="fileName!='' and fileName!=null">
+				set title=#{title}, content=#{content}, fileName=#{fileName}, modDate=sysTimestamp(0)
+			</when>
+			<otherwise>
+				set title=#{title}, content=#{content}, fileName=null, modDate=sysTimestamp(0)
+			</otherwise>
+		</choose>
+		where articleNO = #{articleNO}	
+	</update>
+	
+	<update id="updateRemoveArticle" parameterType="Integer">
+		update hr.board07
+		set boardflag='yes'
+		where articleNO=#{articleNO}
+	</update>
+	
+	<update id="updateRestoreArticle" parameterType="Integer">
+		update hr.board07
+		set boardflag='no'
+		where articleNO=#{articleNO}
+	</update>	
+	
+	
+	<delete id="deleteArticle" parameterType="Integer">
+		delete hr.board07
+		where articleNO=#{articleNO}
+	</delete>
+	
+	
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

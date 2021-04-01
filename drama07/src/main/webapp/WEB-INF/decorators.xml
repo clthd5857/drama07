@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<decorators defaultdir="/WEB-INF/views/decorators">
+
+    <excludes>
+        <pattern>/duplicateId</pattern>
+        <pattern>/download</pattern>
+    </excludes> 
+ 
+    <decorator name="layout" page="layout.jsp">
+        <pattern>/member07/*</pattern>
+    </decorator>
+
+    <decorator name="layout2" page="layout.jsp">
+        <pattern>/board07/*</pattern>
+    </decorator>
+    
+    <decorator name="layout3" page="layout.jsp">
+        <pattern>/admin07/*</pattern>
+    </decorator>
+
+</decorators>
